@@ -105,3 +105,12 @@ jupyter nbconvert --to notebook --execute bests.ipynb --output executed.ipynb
 - Joining on title can mismatch different shows with the same name; ambiguous titles are dropped.
 - Title/vote scraping from IMDb needs re-validation against the live site.
 
+
+## Tests
+
+```
+pip install -r requirements.txt pytest
+python -m pytest -v
+```
+
+The score, cleaning and join live in `scoring.py` (used by `bests.ipynb`). `tests/fixtures/` holds small CSVs, rows copied from `out.csv`, and a hand-written HTML snippet (not a saved IMDb page). No test uses the network. One test is an expected failure that documents a real bug (the spider keeps votes as `(20K)`).
