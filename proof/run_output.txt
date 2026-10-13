@@ -1,0 +1,12 @@
+# Notebook run, headless, in a fresh venv (Python 3.11.17, requirements.txt), no data.csv present:
+#   jupyter nbconvert --to notebook --execute bests.ipynb --output executed.ipynb
+USING SMALL data_sample.csv: numbers are NOT comparable to the full-data out.csv
+393 rows in alldata; 294 rows in series22
+393 1208.7506361323155 7.0002544529262085 133510.4554707379 635506 47530      (n, vm, rm, pm, pM, vM)
+dropped ambiguous title rows: 126 from alldata, 2 from series22
+267 rows written to out_sample.csv
+
+# Spider: `scrapy list` -> imdbshowsSpider. The live crawl could not be tested: the
+# sandbox proxy answered CONNECT to www.imdb.com with 403 Forbidden (no page received).
+# Offline parse of tests/imdb_sample.html (a hand-written fixture, not a real IMDb page):
+[{'imdb_id': 'tt0000001', 'place': '1.', 'title': 'Example Show', 'rate': '8.7', 'vote': '(20K)'}]

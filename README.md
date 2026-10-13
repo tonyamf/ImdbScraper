@@ -33,7 +33,7 @@ Purpose: Calculate a custom weighted score (cal) to rank shows.
 Key Steps:
 Data Loading:
 
-alldata.csv: Raw scraped data.
+data.csv: Raw scraped data (about 1.27 million rows; not included in this repo).
 
 series22.csv: Additional reference data (assumed to have matching titles).
 
@@ -68,7 +68,7 @@ Purpose: Generate a ranked list of shows based on the custom score.
 Workflow:
 Merge Datasets:
 
-Inner join alldata and series on title.
+Inner join alldata and series on title (on `imdb_id` if both files have it). Titles occurring more than once on either side are dropped as ambiguous.
 
 Sorting:
 
@@ -78,46 +78,30 @@ Output:
 
 Save results to out.csv.
 
-Key Issues & Improvements
-Data Cleaning:
+## How to run
 
-Problem: Assumes no missing/invalid values in vote or place.
+Tested with Python 3.11 (see `requirements.txt` for pinned versions).
 
-Fix: Use error handling (e.g., pd.to_numeric(..., errors='coerce')).
+```bash
+python -m venv /tmp/venv && . /tmp/venv/bin/activate
+pip install -r requirements.txt
 
-Formula Complexity:
+# 1. Spider (writes data.csv-style rows; one request per page, obeys robots.txt)
+scrapy crawl imdbshowsSpider -O scraped.json
 
-Problem: The cal formula is overly complex and hard to debug.
+# 2. Notebook, headless (or open bests.ipynb in Jupyter)
+jupyter nbconvert --to notebook --execute bests.ipynb --output executed.ipynb
+```
 
-Fix: Break into smaller, documented components.
+**What works and what does not**
 
-Efficiency:
+- The notebook runs top to bottom. `data.csv` (the full scrape) is not in the repo, so without it the notebook uses `data_sample.csv`: 393 rows recovered from the `*_x` columns of the committed `out.csv`. With the sample the means/maxima used by `cal` differ from the full data, so the scores in `out_sample.csv` are **not** comparable to those in `out.csv`. `out.csv` is the original result from the full data and is kept unchanged.
+- The spider starts correctly on Scrapy 2.19 but its CSS selectors target IMDb's current layout and are **untested against the live site** (the sandbox where this was fixed could not reach imdb.com). The old 2022 XPath selectors no longer match the site. Current IMDb search pages load more results with a JavaScript button, so only the first page is collected. The spider now also emits `imdb_id`, but `series22.csv` has no id column, so the committed data is still joined on title.
+- Proof of the last run: `proof/run_output.txt`.
 
-Problem: Loops over DataFrame rows are slow.
+## Known issues (not fixed)
 
-Fix: Vectorize operations (e.g., alldata['cal'] = ... without loops).
+- The `cal` formula is long and hard to read (now vectorized, same formula, original behaviour).
+- Joining on title can mismatch different shows with the same name; ambiguous titles are dropped.
+- Title/vote scraping from IMDb needs re-validation against the live site.
 
-Matching Titles:
-
-Problem: Inner join on title may exclude entries due to typos or formatting differences.
-
-Fix: Use fuzzy string matching (e.g., fuzzywuzzy library).
-
-Scrapy Spider:
-
-Problem: XPath selectors are fragile to HTML changes.
-
-Fix: Use CSS selectors or test robustness.
-
-Example Output (out.csv)
-place	title	rate	vote	cal
-1	"Arcane"	9.0	250,000	95.2
-2	"Attack on Titan"	8.9	180,000	92.1
-...	...	...	...	...
-
-Use Case
-This code could be used by animation studios or streaming platforms to:
-
-Identify trending shows.
-
-Prioritize content acquisition based on popularity/quality metrics.
