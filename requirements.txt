@@ -1,0 +1,7 @@
+# Tested with Python 3.11.17
+Scrapy==2.19.0
+pandas==3.0.6
+numpy==2.4.6
+# to run the notebook headless
+nbconvert==7.17.2
+ipykernel==7.4.0

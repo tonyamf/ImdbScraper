@@ -172,3 +172,14 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# IDE / build output (HubRefine)
+.idea/
+bin/
+obj/
+out/
+
+# Large scraped data (not in the repo) and scrapy cache
+data.csv
+.scrapy/
+httpcache/
