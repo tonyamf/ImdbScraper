@@ -17,7 +17,7 @@ def read(name):
 
 
 def test_cal_reproduces_committed_out_csv_rows():
-    """Seven rows copied from out.csv: the formula must give the cal the original notebook saved."""
+    """Six rows copied from out.csv: the formula must give the cal the original notebook saved."""
     rows = pd.read_csv(os.path.join(FIXTURES, 'out_rows.csv'))
     got = cal_score(rows['vote'], rows['place'], rows['rate'], **FULL)
     assert got.tolist() == pytest.approx(rows['cal'].tolist(), abs=1e-6)
